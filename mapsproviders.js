@@ -7,6 +7,8 @@ function gxGoogleShow() {
 	var markers = [];
 	var polygons = [];
 	var lastMarker = 0;
+	var defaultLat = "-34.91296249521695";
+	var defaultLong = "-56.1456298828125";
 	var mapWidget; // Google Map Widget
 	var mapUserControl; // GeneXus Map User Control
 	var mapContainer;
@@ -270,23 +272,31 @@ function gxGoogleShow() {
 		if (isCtrlLatNull) {
 			var callback = function (myLatLng) {
 				var infowin = createInfoWin(myLatLng);
-				marker = new google.maps.Marker({
+				var pointIcon2 = GoogleGetIcon(pointIcon);
+				var markerOpt1 = {
 					position: myLatLng,
 					map: mapWidget,
-					icon: pointIcon,
-					clickable: pointClickable,
+					icon: pointIcon2,
 					visible: pointVisible,
+					draggable: true,
+					clickable: false,
 					htmlinfo: infowin
-				});
+				};
+				var marker = createMarker(markerOpt1);
 				callbackFinish(marker);
 				return;
 			};
 			
 			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(function(pos) {
+				navigator.geolocation.getCurrentPosition(
+				function(pos) {
 					myLatLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
 					callback(myLatLng);
-				});
+				}, function() {
+					myLatLng = new google.maps.LatLng(defaultLat, defaultLong);
+					callback(myLatLng);
+				}
+				);
 				return;
 			}
 			else {
@@ -295,12 +305,11 @@ function gxGoogleShow() {
 				myLatLng = new google.maps.LatLng(latitude, longitude);
 				callback(myLatLng);
 				return;
-			}
+	}
 		}
 		
 		callbackFinish(null);
 	}
-
 
 	function GetGoogleMapData(GoogleMapControl) {
 		GoogleMapControl.GoogleMap.MapZoom = mapWidget.getZoom();

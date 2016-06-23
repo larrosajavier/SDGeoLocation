@@ -121,7 +121,7 @@ function gxMap() {
 			if (!gxmapscriptLoading) {			
 				gxmapscriptLoading = true;
 				var remoteScripts = [];			
-				remoteScripts.push("//maps.google.com/maps/api/js?sensor=false");			
+				remoteScripts.push("//maps.google.com/maps/api/js");			
 				gx.http.loadScripts(remoteScripts , callShow.closure(this));
 			}
 			gxmapinstances.push( {"show": this.doShow.closure(this)}) ;
