@@ -1,4 +1,5 @@
 var gxmapinstances = [];
+var version = "3.3"; 
 var gxmapscriptLoading = false;
 function gxMap() {
 	this.GxMap;

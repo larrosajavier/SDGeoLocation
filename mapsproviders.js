@@ -61,6 +61,15 @@ function gxGoogleShow() {
 
 			mapWidget = new google.maps.Map(mapContainer, myOptions);
 			mapWidget.setOptions(myOptions);
+			
+			
+			//////////////////////////////////CUSTOM
+			var Buttoncontainer = document.createElement('div');
+			var Buttoncontrol = new MypositionControl(Buttoncontainer, mapWidget);
+			Buttoncontainer.index = 1;
+			mapWidget.controls[google.maps.ControlPosition.TOP_RIGHT].push(Buttoncontainer);
+			////////////////////////////////
+			
 		}
 
 		//clearAllPoints();
@@ -282,6 +291,7 @@ function gxGoogleShow() {
 					clickable: false,
 					htmlinfo: infowin
 				};
+				
 				var marker = createMarker(markerOpt1);
 				callbackFinish(marker);
 				return;
@@ -295,6 +305,7 @@ function gxGoogleShow() {
 				}, function() {
 					myLatLng = new google.maps.LatLng(defaultLat, defaultLong);
 					callback(myLatLng);
+					gx.util.alert.showError("No se puede obtener My Location, desde un sitio no seguro");
 				}
 				);
 				return;
@@ -372,6 +383,68 @@ function gxGoogleShow() {
 			new google.maps.Point(17, 34),
 			new google.maps.Size(25, 40));
 		return markerImage;
+	}
+	
+	function MypositionControl(controlDiv, map) {
+
+		  // Set CSS for the control border.
+		  var controlUI = document.createElement('div');
+		  controlUI.style.backgroundColor = '#fff';
+		  controlUI.style.border = '2px solid #fff';
+		  controlUI.style.borderRadius = '3px';
+		  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+		  controlUI.style.cursor = 'pointer';
+		  controlUI.style.marginBottom = '2px';
+		  controlUI.style.textAlign = 'center';
+		  controlUI.title = 'Click to My Location';
+		  controlUI.style.rigth = 0 ; 
+		  controlDiv.appendChild(controlUI);
+
+		  // Set CSS for the control interior.
+		  var controlText = document.createElement('div');
+		  controlText.style.color = 'rgb(25,25,25)';
+		  controlText.style.lineHeight = '8px';
+		  controlText.style.paddingLeft = '5px';
+		  controlText.style.paddingRight = '5px';
+		  controlText.innerHTML = '<img src="SDGeoLocation/mylocation.jpg">';        
+		  controlUI.appendChild(controlText);
+
+		  
+		  var callAux = function (myLatLng) {
+				clearAllPoints();
+				var infowin = createInfoWin(myLatLng);
+				var pointIcon3 = GoogleGetIcon(pointIcon3);
+				var markerOpt1 = {
+					position: myLatLng,
+					map: mapWidget,
+					icon: pointIcon3,
+					visible: true,
+					draggable: true,
+					clickable: false,
+					htmlinfo: infowin
+				};
+				var marker = createMarker(markerOpt1);
+				AfterMarkerDrawn(marker);
+				return;
+			};
+		  
+		  controlUI.addEventListener('click', function() {
+			  /////////////
+				if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+				function(pos) {
+					myLatLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+					callAux(myLatLng);
+				}, function() {
+					myLatLng = new google.maps.LatLng(defaultLat, defaultLong);
+					callAux(myLatLng);
+				}
+				);
+				return;
+			}
+			///////////
+		  });
+
 	}
 
 }
